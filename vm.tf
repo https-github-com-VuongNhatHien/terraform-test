@@ -5,3 +5,62 @@ resource "azurerm_resource_group" "this" {
   name     = "rg-${local.suffix}"
   location = "southeastasia"
 }
+
+resource "azurerm_virtual_network" "this" {
+  name                = "vnet-${local.suffix}"
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  address_space       = ["10.0.0.0/16"]
+}
+
+resource "azurerm_subnet" "this" {
+  name                 = "subnet-${local.suffix}"
+  resource_group_name  = azurerm_resource_group.this.name
+  virtual_network_name = azurerm_virtual_network.this.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+resource "azurerm_network_interface" "this" {
+  name                = "nic-${local.suffix}"
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.this.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+data "azurerm_platform_image" "this" {
+  location            = azurerm_resource_group.this.location
+  publisher           = "Canonical"
+  offer               = "ubuntu-24_04-lts"
+  sku                 = "server"
+}
+
+resource "azurerm_linux_virtual_machine" "this" {
+  name                = "vm-${local.suffix}"
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
+  size                = "Standard_B2s"
+  admin_username      = "hien"
+  admin_ssh_key {
+    username  = "hien"
+    public_key = file("~/.ssh/id_ed25519.pub")
+  }
+
+  network_interface_ids = [azurerm_network_interface.this.id]
+
+  source_image_reference {
+    publisher = data.azurerm_platform_image.this.publisher
+    offer     = data.azurerm_platform_image.this.offer
+    sku       = data.azurerm_platform_image.this.sku
+    version   = "latest"
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+}
