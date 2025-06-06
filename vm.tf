@@ -1,9 +1,15 @@
 locals {
   suffix = "terraform-test"
+  tags = {
+    ENV = "Dev"
+    CREATED_BY = "Hien Vuong"
+  }
 }
 resource "azurerm_resource_group" "this" {
   name     = "rg-${local.suffix}"
   location = "southeastasia"
+
+  tags     = local.tags
 }
 
 resource "azurerm_virtual_network" "this" {
@@ -11,6 +17,8 @@ resource "azurerm_virtual_network" "this" {
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   address_space       = ["10.0.0.0/16"]
+
+  tags                 = local.tags
 }
 
 resource "azurerm_subnet" "this" {
@@ -25,6 +33,8 @@ resource "azurerm_public_ip" "this" {
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   allocation_method   = "Static"
+
+  tags     = local.tags
 }
 
 resource "azurerm_network_interface" "this" {
@@ -38,12 +48,16 @@ resource "azurerm_network_interface" "this" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.this.id
   }
+
+  tags     = local.tags
 }
 
 resource "azurerm_network_security_group" "this" {
   name                = "nsg-${local.suffix}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
+  
+  tags     = local.tags
 }
 
 resource "azurerm_network_security_rule" "ssh" {
@@ -124,4 +138,6 @@ resource "azurerm_linux_virtual_machine" "this" {
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
   }
+
+  tags     = local.tags
 }
