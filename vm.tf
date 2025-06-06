@@ -60,6 +60,34 @@ resource "azurerm_network_security_rule" "ssh" {
   network_security_group_name = azurerm_network_security_group.this.name
 }
 
+resource "azurerm_network_security_rule" "http" {
+  name                        = "allow-http-${local.suffix}"
+  priority                    = 200
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.this.name
+  network_security_group_name = azurerm_network_security_group.this.name
+}
+
+resource "azurerm_network_security_rule" "https" {
+  name                        = "allow-https-${local.suffix}"
+  priority                    = 300
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.this.name
+  network_security_group_name = azurerm_network_security_group.this.name
+}
+
 resource "azurerm_network_interface_security_group_association" "this" {
   network_interface_id      = azurerm_network_interface.this.id
   network_security_group_id = azurerm_network_security_group.this.id
