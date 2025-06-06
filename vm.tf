@@ -40,6 +40,31 @@ resource "azurerm_network_interface" "this" {
   }
 }
 
+resource "azurerm_network_security_group" "this" {
+  name                = "nsg-${local.suffix}"
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+}
+
+resource "azurerm_network_security_rule" "ssh" {
+  name                        = "allow-ssh-${local.suffix}"
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "22"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.this.name
+  network_security_group_name = azurerm_network_security_group.this.name
+}
+
+resource "azurerm_network_interface_security_group_association" "this" {
+  network_interface_id      = azurerm_network_interface.this.id
+  network_security_group_id = azurerm_network_security_group.this.id
+}
+
 data "azurerm_platform_image" "this" {
   location            = azurerm_resource_group.this.location
   publisher           = "Canonical"
@@ -69,6 +94,6 @@ resource "azurerm_linux_virtual_machine" "this" {
 
   os_disk {
     caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
+    storage_account_type = "StandardSSD_LRS"
   }
 }
