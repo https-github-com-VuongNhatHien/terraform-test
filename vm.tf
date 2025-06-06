@@ -5,6 +5,7 @@ locals {
     CREATED_BY = "Hien Vuong"
   }
 }
+
 resource "azurerm_resource_group" "this" {
   name     = "rg-${local.suffix}"
   location = "southeastasia"
@@ -135,6 +136,7 @@ resource "azurerm_linux_virtual_machine" "this" {
   }
 
   os_disk {
+    name = "os-disk-${local.suffix}"
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
   }
