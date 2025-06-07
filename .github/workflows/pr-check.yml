@@ -8,7 +8,7 @@ on:
 jobs:
   terraform:
     name: Validate and Plan Terraform
-    uses: ./.github/actions/terraform.yml
+    uses: ./.github/workflows/terraform.yml
     with:
       run_apply: false
     permissions:
