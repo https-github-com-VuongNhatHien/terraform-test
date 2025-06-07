@@ -42,4 +42,6 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         run: terraform plan -out plan
     permissions:
+      pull-requests: write
       id-token: write
+      contents: read
