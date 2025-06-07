@@ -121,10 +121,8 @@ resource "azurerm_linux_virtual_machine" "this" {
   location            = azurerm_resource_group.this.location
   size                = "Standard_B2s"
   admin_username      = "hien"
-  admin_ssh_key {
-    username  = "hien"
-    public_key = file("~/.ssh/id_ed25519.pub")
-  }
+  admin_password      = "Machine123!"
+  disable_password_authentication = false
 
   network_interface_ids = [azurerm_network_interface.this.id]
 
