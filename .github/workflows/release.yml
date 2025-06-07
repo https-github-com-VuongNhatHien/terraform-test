@@ -21,13 +21,9 @@ jobs:
       - name: Azure CLI Login
         uses: azure/login@v2
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.ARM_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
-              "tenantId": "${{ secrets.ARM_TENANT_ID }}",
-              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}"
-            }
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
       - name : Terraform Init
         env:
@@ -49,3 +45,7 @@ jobs:
         env:
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         run: terraform apply plan
+    permissions:
+      pull-requests: write
+      id-token: write
+      contents: read
