@@ -41,3 +41,5 @@ jobs:
         env:
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         run: terraform plan -out plan
+    permissions:
+      id-token: write
