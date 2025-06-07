@@ -2,7 +2,7 @@ locals {
   suffix = "terraform-test"
   tags = {
     ENV = "Dev"
-    CREATED_BY = "Hien Vuong"
+    CREATED_BY = "Hien Vuong Nhat"
   }
 }
 
